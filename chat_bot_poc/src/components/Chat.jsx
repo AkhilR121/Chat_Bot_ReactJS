@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { getCustomers } from "../services/getData";
+import { useState } from "react";
 
 function renderNestedValue(value) {
   if (value && typeof value === "object" && !Array.isArray(value)) {
@@ -25,6 +26,7 @@ function renderNestedValue(value) {
 }
 
 function KeyValueCard({ keyLabel, value }) {
+  const [toggle, setToggle] = useState(true);
   const isObject = value && typeof value === "object" && !Array.isArray(value);
 
   if (!isObject) {
@@ -39,7 +41,8 @@ function KeyValueCard({ keyLabel, value }) {
 
   return (
     <div className="border-2 border-blue-500 p-4 m-4 rounded-md">
-      <h3 className="font-semibold mb-2">{keyLabel}</h3>
+      <h3 className="font-semibold mb-2">{keyLabel}</h3> 
+      <span className={`fa ${toggle ? "fa-angle-up" : "fa-angle-down"} cursor-pointer`} onClick={() => setToggle(!toggle)}></span>
       {renderNestedValue(value)}
     </div>
   );
