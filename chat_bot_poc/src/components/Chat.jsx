@@ -2,18 +2,32 @@ import { useQuery } from "@tanstack/react-query";
 import { getCustomers } from "../services/getData";
 
 function ChatComponent() {
-  const data = useQuery({
+  const { data: customers = [] } = useQuery({
     queryKey: ["customer-data"],
-    queryFn: () => getCustomers(),
-    initialData: () => [],
+    queryFn: getCustomers,
   });
 
   return (
-    <div className="border-2 border-blue-500 p-4 rounded-md">
-      <h2>Chat Component</h2>
-      <p>This is where the chat interface will be implemented.</p>
-    </div>
+    <>
+      {customers.map((customer, i) => (
+        <div key={i}>
+          {Object.entries(customer).map(([key, value]) => (
+            <div
+              key={key}
+              className="border-2 border-blue-500 p-4 rounded-md"
+            >
+              <p>
+                {key}: {value ? String(value) : "---"}
+              </p>
+            </div>
+          ))}
+        </div>
+      ))}
+    </>
   );
 }
 
 export default ChatComponent;
+{
+  /* <span className="icon">down/up</span> */
+}
