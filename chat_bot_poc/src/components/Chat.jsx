@@ -24,14 +24,14 @@ function renderNestedValue(value) {
   return value == null ? "---" : String(value);
 }
 
-function KeyValueCard({ label, value }) {
+function KeyValueCard({ keyLabel, value }) {
   const isObject = value && typeof value === "object" && !Array.isArray(value);
 
   if (!isObject) {
     return (
       <div className="border-2 border-blue-500 p-4 m-4 rounded-md">
         <p>
-          {label}: {value == null ? "---" : String(value)}
+          {keyLabel}: {value == null ? "---" : String(value)}
         </p>
       </div>
     );
@@ -39,7 +39,7 @@ function KeyValueCard({ label, value }) {
 
   return (
     <div className="border-2 border-blue-500 p-4 m-4 rounded-md">
-      <h3 className="font-semibold mb-2">{label}</h3>
+      <h3 className="font-semibold mb-2">{keyLabel}</h3>
       {renderNestedValue(value)}
     </div>
   );
@@ -56,7 +56,7 @@ function ChatComponent() {
       {customers.map((customer, i) => (
         <div key={i} className="flex flex-col text-left w-xl">
           {Object.entries(customer).map(([key, value]) => (
-            <KeyValueCard key={key} label={key} value={value} />
+            <KeyValueCard key={key} keyLabel={key} value={value} />
           ))}
         </div>
       ))}

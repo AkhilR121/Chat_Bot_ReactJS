@@ -24,7 +24,11 @@
       "email": "akhil@nrg.com",
       "personal_details": {
         "name": "akh",
-        "age": "26"
+        "age": "26",
+        "guardian_details": {
+          "name": "John Doe",
+          "relationship": "Father"
+        }
       }
     },
     "contactId": null,
