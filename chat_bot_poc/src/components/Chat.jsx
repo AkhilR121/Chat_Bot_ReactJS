@@ -2,52 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import { getCustomers } from "../services/getData";
 import { useState } from "react";
 
-function renderNestedValue(value) {
-  if (value && typeof value === "object" && !Array.isArray(value)) {
-    return (
-      <ul className="ml-4 list-disc">
-        {Object.entries(value).map(([childKey, childValue]) => (
-          <li key={childKey}>
-            <span className="font-semibold">{childKey}:</span>{" "}
-            {childValue &&
-            typeof childValue === "object" &&
-            !Array.isArray(childValue)
-              ? renderNestedValue(childValue)
-              : childValue == null
-              ? "---"
-              : String(childValue)}
-          </li>
-        ))}
-      </ul>
-    );
-  }
-
-  return value == null ? "---" : String(value);
-}
-
-function KeyValueCard({ keyLabel, value }) {
-  const [toggle, setToggle] = useState(true);
-  const isObject = value && typeof value === "object" && !Array.isArray(value);
-
-  if (!isObject) {
-    return (
-      <div className="border-2 border-blue-500 p-4 m-4 rounded-md">
-        <p>
-          {keyLabel}: {value == null ? "---" : String(value)}
-        </p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="border-2 border-blue-500 p-4 m-4 rounded-md">
-      <h3 className="font-semibold mb-2">{keyLabel}</h3> 
-      <span className={`fa ${toggle ? "fa-angle-up" : "fa-angle-down"} cursor-pointer`} onClick={() => setToggle(!toggle)}></span>
-      {renderNestedValue(value)}
-    </div>
-  );
-}
-
 function ChatComponent() {
   const { data: customers = [] } = useQuery({
     queryKey: ["customer-data"],
@@ -67,7 +21,62 @@ function ChatComponent() {
   );
 }
 
-export default ChatComponent;
-{
-  /* <span className="icon">down/up</span> */
+function KeyValueCard({ keyLabel, value }) {
+  const [toggle, setToggle] = useState(false);
+  const [nestedToggle, setNestedObjToggle] = useState(false);
+
+  const isObject = value && typeof value === "object" && !Array.isArray(value);
+
+  if (!isObject) {
+    return (
+      <div className="border-2 border-blue-500 p-4 m-4 rounded-md">
+        <p>
+          {keyLabel}: {value == null ? "---" : String(value)}
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="border-2 border-blue-500 p-4 m-4 rounded-md">
+      <div className="flex gap-3">
+        <h3 className="font-semibold mb-2">{keyLabel}</h3>
+        {/* If there is nested object: chevron will render conditionally */}
+        <span
+          className={`fa ${
+            toggle ? "fa-angle-up" : "fa-angle-down"
+          } cursor-pointer text-4xl`}
+          style={{ fontSize: "26px" }}
+          onClick={() => setToggle(!toggle)}
+        ></span>
+      </div>
+      {toggle && renderNestedValue(value, nestedToggle, setNestedObjToggle)}
+    </div>
+  );
 }
+
+function renderNestedValue(value, nestedToggle, setNestedObjToggle) {
+
+  if (value && typeof value === "object" && !Array.isArray(value)) {
+    return (
+      <ul className="ml-4 list-disc">
+        {Object.entries(value).map(([childKey, childValue]) => (
+          <li key={childKey}>
+            <span className="font-semibold">{childKey}:</span>
+            {childValue &&
+            typeof childValue === "object" &&
+            !Array.isArray(childValue)
+              ? renderNestedValue(childValue)
+              : childValue == null
+              ? "---"
+              : String(childValue)}
+          </li>
+        ))}
+      </ul>
+    );
+  }
+
+  return value == null ? "---" : String(value);
+}
+
+export default ChatComponent;
