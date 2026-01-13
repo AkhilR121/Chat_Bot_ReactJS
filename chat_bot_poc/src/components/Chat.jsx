@@ -22,7 +22,6 @@ function ChatComponent() {
       {customers.map((customer, i) => (
         <div key={i} className="flex flex-col text-left w-xl">
           {Object.entries(customer).map(([key, value]) => (
-            <>
             <KeyValueCard
               key={key}
               keyLabel={key}
@@ -31,7 +30,6 @@ function ChatComponent() {
               onToggle={handleToggle}
               path={key}
             />
-            </>
           ))}
         </div>
       ))}
@@ -54,11 +52,13 @@ function KeyValueCard({ keyLabel, value, expanded, onToggle, path }) {
 
   return (
     <div className="border-2 border-blue-500 p-4 m-4 rounded-md">
-      {path}
       <div className="flex gap-3">
         <h3 className="font-semibold mb-2">{keyLabel}</h3>
         {/* If there is nested object: chevron will render conditionally */}
-        <ChevronIcon toggle={!!expanded[path]} onToggle={() => onToggle(path)} />
+        <ChevronIcon
+          toggle={!!expanded[path]}
+          onToggle={() => onToggle(path)}
+        />
       </div>
       {!!expanded[path] && renderNestedValue(value, expanded, onToggle, path)}
     </div>
@@ -80,7 +80,7 @@ function renderNestedValue(value, expanded, onToggle, parentPath) {
           return (
             <li key={childPath}>
               <span className="font-semibold">
-                {childKey}
+                {childKey} {" "}
                 {isChildObject && (
                   <ChevronIcon
                     toggle={isOpen}
