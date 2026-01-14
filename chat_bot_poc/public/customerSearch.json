@@ -1,0 +1,37 @@
+{
+  "took": 5,
+  "timed_out": false,
+  "_shards": {
+    "total": 5,
+    "successful": 5,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": {
+      "value": 1,
+      "relation": "eq"
+    },
+    "max_score": 1.0,
+    "hits": [
+      {
+        "_index": "customers",
+        "_type": "_doc",
+        "_id": "cust-123",
+        "_score": 1.0,
+        "_source": {
+          "id": "cust-123",
+          "customer_name": "Acme Corporation",
+          "duns_number": "123456789",
+          "phone": "555-0100",
+          "address": "123 Main St",
+          "city": "New York",
+          "state": "NY",
+          "zip": "10001",
+          "len": "12345",
+          "legacy_source": "SIEBEL"
+        }
+      }
+    ]
+  }
+}

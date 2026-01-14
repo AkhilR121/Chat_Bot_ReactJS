@@ -1,0 +1,55 @@
+{
+  "took": 3,
+  "timed_out": false,
+  "_shards": {
+    "total": 5,
+    "successful": 5,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": {
+      "value": 0,
+      "relation": "eq"
+    },
+    "max_score": null,
+    "hits": []
+  },
+  "suggest": {
+    "dnblookupsuggest": [
+      {
+        "text": "acme",
+        "offset": 0,
+        "length": 4,
+        "options": [
+          {
+            "text": "Acme Corporation",
+            "_index": "customers",
+            "_type": "_doc",
+            "_id": "cust-123",
+            "_score": 1.0,
+            "_source": {
+              "id": "cust-123",
+              "customer_name": "Acme Corporation",
+              "duns_number": "123456789",
+              "legacy_source": "SIEBEL"
+            }
+          },
+          {
+            "text": "Acme Industries",
+            "_index": "customers",
+            "_type": "_doc",
+            "_id": "cust-124",
+            "_score": 0.9,
+            "_source": {
+              "id": "cust-124",
+              "customer_name": "Acme Industries",
+              "duns_number": "987654321",
+              "legacy_source": "VHOS"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
