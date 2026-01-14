@@ -2,9 +2,12 @@ import { useQuery } from "@tanstack/react-query";
 import { getCustomers } from "../services/getData";
 import { useState } from "react";
 
+const isPlainObject = (value) =>
+  value !== null && typeof value === "object" && !Array.isArray(value);
+
 function ChatComponent() {
   const [expanded, setExpanded] = useState({});
-  const { data: customers = [] } = useQuery({
+  const data = useQuery({
     queryKey: ["customer-data"],
     queryFn: getCustomers,
   });
@@ -17,11 +20,41 @@ function ChatComponent() {
     }));
   };
 
-  return (
-    <>
-      {customers.map((customer, i) => (
-        <div key={i} className="flex flex-col text-left w-xl">
-          {Object.entries(customer).map(([key, value]) => (
+  const rootData = data.data;
+
+  const renderRoot = () => {
+    if (Array.isArray(rootData)) {
+      return rootData.map((item, index) => (
+        <div key={index} className="flex flex-col text-left w-xl">
+          {isPlainObject(item) ? (
+            Object.entries(item).map(([key, value]) => (
+              <KeyValueCard
+                key={key}
+                keyLabel={key}
+                value={value}
+                expanded={expanded}
+                onToggle={handleToggle}
+                path={`${index}.${key}`}
+              />
+            ))
+          ) : (
+            <KeyValueCard
+              key={index}
+              keyLabel={index}
+              value={item}
+              expanded={expanded}
+              onToggle={handleToggle}
+              path={`${index}`}
+            />
+          )}
+        </div>
+      ));
+    }
+
+    if (isPlainObject(rootData)) {
+      return (
+        <div className="flex flex-col text-left w-xl">
+          {Object.entries(rootData).map(([key, value]) => (
             <KeyValueCard
               key={key}
               keyLabel={key}
@@ -32,15 +65,34 @@ function ChatComponent() {
             />
           ))}
         </div>
-      ))}
-    </>
-  );
+      );
+    }
+
+    if (rootData === undefined) {
+      return null;
+    }
+
+    return (
+      <div className="flex flex-col text-left w-xl">
+        <KeyValueCard
+          keyLabel="value"
+          value={rootData}
+          expanded={expanded}
+          onToggle={handleToggle}
+          path="root"
+        />
+      </div>
+    );
+  };
+
+  return <>{renderRoot()}</>;
 }
 
 function KeyValueCard({ keyLabel, value, expanded, onToggle, path }) {
-  const isObject = value && typeof value === "object" && !Array.isArray(value);
+  const hasChildren = value && typeof value === "object";
+  const isOpen = !!expanded[path];
 
-  if (!isObject) {
+  if (!hasChildren) {
     return (
       <div className="border-2 border-blue-500 p-4 m-4 rounded-md">
         <p>
@@ -55,32 +107,63 @@ function KeyValueCard({ keyLabel, value, expanded, onToggle, path }) {
       <div className="flex gap-3">
         <h3 className="font-semibold mb-2">{keyLabel}</h3>
         {/* If there is nested object: chevron will render conditionally */}
-        <ChevronIcon
-          toggle={!!expanded[path]}
-          onToggle={() => onToggle(path)}
-        />
+        <ChevronIcon toggle={isOpen} onToggle={() => onToggle(path)} />
       </div>
-      {!!expanded[path] && renderNestedValue(value, expanded, onToggle, path)}
+      {isOpen && renderNestedValue(value, expanded, onToggle, path)}
     </div>
   );
 }
 
 function renderNestedValue(value, expanded, onToggle, parentPath) {
-  if (value && typeof value === "object" && !Array.isArray(value)) {
+  if (Array.isArray(value)) {
+    if (value.length === 0) {
+      return <div className="ml-4">[]</div>;
+    }
+
     return (
       <ul className="ml-4 list-disc">
-        {Object.entries(value).map(([childKey, childValue]) => {
-          const childPath = `${parentPath}.${childKey}`;
-          const isChildObject =
-            childValue &&
-            typeof childValue === "object" &&
-            !Array.isArray(childValue);
+        {value.map((item, index) => {
+          const childPath = `${parentPath}[${index}]`;
+          const isChildObject = item && typeof item === "object";
           const isOpen = !!expanded[childPath];
 
           return (
             <li key={childPath}>
               <span className="font-semibold">
-                {childKey} {" "}
+                {index}{" "}
+                {isChildObject && (
+                  <ChevronIcon
+                    toggle={isOpen}
+                    onToggle={() => onToggle(childPath)}
+                  />
+                )}
+              </span>
+              {isChildObject && isOpen
+                ? renderNestedValue(item, expanded, onToggle, childPath)
+                : !isChildObject
+                ? item == null
+                  ? "---"
+                  : String(item)
+                : null}
+            </li>
+          );
+        })}
+      </ul>
+    );
+  }
+
+  if (value && typeof value === "object") {
+    return (
+      <ul className="ml-4 list-disc">
+        {Object.entries(value).map(([childKey, childValue]) => {
+          const childPath = `${parentPath}.${childKey}`;
+          const isChildObject = childValue && typeof childValue === "object";
+          const isOpen = !!expanded[childPath];
+
+          return (
+            <li key={childPath}>
+              <span className="font-semibold">
+                {childKey}{" "}
                 {isChildObject && (
                   <ChevronIcon
                     toggle={isOpen}
